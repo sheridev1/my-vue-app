@@ -17,6 +17,7 @@ register();
 const router = useRouter()
 const modules = ref([Pagination])
 const spaceBetween = 10;
+const star=ref(1)
 
 
 const props = defineProps({
@@ -66,10 +67,12 @@ onMounted(async () => {
 
                         <q-card-section>
                             <div class="text-h6">{{ item?.name}}</div>
-                            <div class="text-subtitle2">$ {{ item?.price }}</div>
-                            <div class="q-gutter-y-md column">
-                                <q-rating v-model="item.averageRating" size="2em" color="gold-5" icon="star_border" readonly
+                            <div class="text-subtitle2 text-left flex row justify-between"  style="font-weight: 300;">$ {{ item?.price }}
+                                <div class="" >
+                                    {{ item.averageRating }}
+                                    <q-rating v-model="star" :max="1" size="2em" color="#ffb302" icon="star_border" readonly
                                     icon-selected="star"></q-rating>
+                                </div>
                             </div>
                         </q-card-section>
                     </q-card>
@@ -106,6 +109,6 @@ onMounted(async () => {
 .swipper {
     cursor: pointer;
     width: 1300px;
-    height: 400px;
+    height: 320px;
 }
 </style>

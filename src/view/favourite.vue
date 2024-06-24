@@ -32,10 +32,12 @@
 
                         <q-card-section>
                             <div class="text-h6 text-left">{{ item?.name }}</div>
-                            <div class="text-subtitle2 text-left">$ {{ item?.price }}</div>
-                            <div class="q-gutter-y-md column">
-                                <q-rating v-model="item.rating" size="2em" color="gold-5" icon="star_border" readonly
+                            <div class="text-subtitle2 text-left flex row justify-between"  style="font-weight: 300;">$ {{ item?.price }}
+                                <div class="" >
+                                    {{ item.averageRating }}
+                                    <q-rating v-model="star" :max="1" size="2em" color="#ffb302" icon="star_border" readonly
                                     icon-selected="star"></q-rating>
+                                </div>
                             </div>
                         </q-card-section>
                     </q-card>
@@ -59,6 +61,7 @@ const productsFavStore = getFavProductStore();
 const router = useRouter();
 const products = computed(() => productsFavStore.products);
 const loading = ref(true);
+const star=ref(1);
 const favoriteLoading = ref(false);
 
 onMounted(async () => {

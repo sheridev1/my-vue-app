@@ -15,6 +15,7 @@ let startIndex = 0;
 const loading = ref(false);
 const allProducts = ref([]);
 const displayedProducts = ref([]);
+const star=ref(1)
 
 
 // Function to navigate to product details
@@ -60,10 +61,12 @@ onMounted(loadInitialProducts);
                             </div>
                             <q-card-section>
                                 <div class="text-h6 text-left">{{ item?.name }}</div>
-                                <div class="text-subtitle2 text-left">$ {{ item?.price }}</div>
-                                <div class="q-gutter-y-md column">
-                                    <q-rating v-model="item.averageRating" size="2em" color="gold-5" icon="star_border"
-                                        readonly icon-selected="star"></q-rating>
+                                <div class="text-subtitle2 text-left flex row justify-between"  style="font-weight: 300;">$ {{ item?.price }}
+                                    <div class="" >
+                                        {{ item.averageRating }}
+                                        <q-rating v-model="star" :max="1" size="2em" color="#ffb302" icon="star_border" readonly
+                                        icon-selected="star"></q-rating>
+                                    </div>
                                 </div>
                             </q-card-section>
                         </q-card>

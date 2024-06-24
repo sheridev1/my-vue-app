@@ -1,29 +1,28 @@
 <template>
-    <q-footer class="bg-black text-white q-pa-md" elevated>
-        <q-card flat bordered class="bg-black text-white text-center">
+    <q-footer class=" text-gray q-pa-md" elevated>
+        <q-card flat  class=" text-black text-center">
             <q-card-section>
                 <h1 class="text-h3">You can find us at</h1>
                 <q-btn v-for="social in socials" :key="social.icon" :href="social.url" target="_blank" flat round dense
-                    class="q-mx-sm text-white" icon>
+                    class="q-mx-sm " icon>
                     <q-icon :name="social.icon" size="24px" />
                 </q-btn>
             </q-card-section>
-            <div class="row items-center justify-between ">
+            <div class="row items-center justify-between">
                 <div class="col-4">
                     <div class="text-h6">Exclusive</div>
                     <p> 2024 Your Company. All rights reserved.</p>
                 </div>
-                <div class="column" >
-                    <div class="text-bold">ACCOUNT</div>
-                    <div class="column ">
+                <q-separator color="gray"  vertical/>
+                <div class="column">
+                    <div class="text-bold q-mb-sm ">ACCOUNT</div>
+                    <div class="column  q-gutter-sm content-center">
                         <q-btn flat label="Home" padding="0px" dense style=" width:50px;"
                             @click="$router.push('/')" :class="{ 'active-link': isActiveRoute('/') }" />
                         <q-btn label="Contact" padding="0px" dense flat style=" width:50px; " @click="goToContactPage"
                             :class="{ 'active-link': isActiveRoute('/contact') }" />
                         <q-btn v-if="!istoken" flat padding="0px" dense label="Login" style=" width:50px; "
                             @click="goToLoginPage" :class="{ 'active-link': isActiveRoute('/login') }" />
-                        <q-btn v-if="!isAuthenticated" flat padding="0px" style=" width:50px; " dense label="Sign Up"
-                            @click="goToSignUpPage" :class="{ 'active-link': isActiveRoute('/register') }" />
                         <q-btn v-if="isAuthenticated" padding="0px" dense flat label="Logout" style=" width:80px; "
                             @click="logout" :class="{ 'active-link': isActiveRoute('/') }" />
                         <q-btn label="About" padding="0px" dense flat style=" width:50px;"
@@ -31,6 +30,7 @@
 
                     </div>
                 </div>
+                <q-separator color="gray"  vertical/>
                 <div class="col-4">
                     <div class="text-bold q-mb-lg q-mt-none">QUICK LINKS</div>
                     <div  class="q-gutter-sm">

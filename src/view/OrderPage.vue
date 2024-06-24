@@ -20,7 +20,7 @@ const productArray = ref([]);
 
 const productStore = getProductStore();
 const cartStore = getCartStore();
-const orderStore =getOrderStore();
+const orderStore = getOrderStore();
 
 const firstName = ref('');
 const city = ref('');
@@ -69,7 +69,7 @@ const getProduct = async (productId, quantity) => {
         quantity: quantity,
         quantityError: '' // Initialize the error message
     });
-    console.log("product Array",productArray)
+    console.log("product Array", productArray)
 }
 
 //retriving cart from local
@@ -217,9 +217,9 @@ const placeOrder = async () => {
         notes.value = '';
 
 
-        setTimeout(()=>{
+        setTimeout(() => {
             router.push('/')
-        },1000)
+        }, 1000)
 
 
     }
@@ -273,16 +273,12 @@ onMounted(() => {
                     <img :src="slide1" width="50px" />
                     <div class="flex items-center grow justify-between" style="flex-grow: 1;">
                         <div class="q-mt-sm q-ml-xs">{{ item.name }}</div>
+                        <div>x {{ item.quantity }}</div>
                         <div class="" style="align-text">$ {{ calculateSubTotal(item) }}</div>
                     </div>
-                    <div class=" q-mt-md row flex items-center grow justify-between">
-                        Quantity
-                        <div>$ {{item.quantity}}</div>
-                    </div>
-                    
-
+                    <q-separator class="q-mt-md" />
                 </div>
-                
+
 
                 <div class="row justify-between">
                     SubTotal
@@ -301,7 +297,6 @@ onMounted(() => {
                 </div>
                 <div class="column">
                     <div class="text-accent q-mt-md text-bold"> Select Method</div>
-
                     <q-radio v-model="shape" color="accent" val="COD" label="COD" />
                     <q-radio v-model="shape" color="accent" val="Card" label="Card" />
 
