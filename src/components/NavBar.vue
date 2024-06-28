@@ -1,28 +1,27 @@
 <script setup>
-import { ref, computed, watchEffect, onMounted, watch } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import SearchInput from "../components/SearchInput.vue";
 import { getCartStore } from '../store/addtocart';
 import slide1 from '../assets/p3.png';
 import { removeItemStore } from '../store/remove';
 
-
-let IMAGEURL = slide1
 const route = useRoute();
 const router = useRouter();
-
-const istoken = computed(() => localStorage.getItem('authToken'));
-const opendrawer = computed(() => cartStore.isCartDrawerOpen)
 const cartStore = getCartStore();
+const removeStore = removeItemStore();
+
+// Computed properties
+const istoken = computed(() => localStorage.getItem('authToken'));
+const opendrawer = computed(() => cartStore.isCartDrawerOpen);
 const cartfromserver = computed(() => cartStore.cart);
 const Cartloading = computed(() => cartStore.cartLoading);
-const noofitem = computed(() => cartStore.cartLength)
-const productArray = computed(() => cartStore.productArray)
+const noofitem = computed(() => cartStore.cartLength);
+const productArray = computed(() => cartStore.productArray);
+const message = computed(() => removeStore.message);
 
-
-
-const removeStore = removeItemStore();
-const message = computed(() => removeStore.message)
+const user = computed(() => cartStore.user);
+// Methods
 const goToLoginPage = () => {
     router.push('/login');
 };
@@ -36,11 +35,8 @@ const favourite = () => {
 };
 
 const signOut = () => {
-    if (istoken) {
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('id_User');
-        router.push('/login');
-    }
+    cartStore.signOut();
+    router.push('/login');
 };
 
 const goToContactPage = () => {
@@ -56,32 +52,34 @@ const isActiveRoute = (path) => {
 };
 
 onMounted(() => {
-    cartStore.cartItem()
+    cartStore.cartItem();
     cartStore.lengthCart();
     cartStore.isCartDrawerOpen;
 });
 
-
 const update = () => {
     cartStore.updateCart();
-}
+};
 
 const Proccedtocart = () => {
-    cartStore.toggleCartDrawer()
-    router.push('/cart' )
-}
+    cartStore.toggleCartDrawer();
+    router.push('/cart');
+};
 
 //checks for error
 const hasError = computed(() => {
     return productArray.value.some(item => item.quantityError);
 });
 
-
-
 watch(productArray, () => {
     cartStore.lengthCart();
-})
+});
 
+onMounted(() => {
+    if (localStorage.getItem('user')) {
+        cartStore.setUser(JSON.parse(localStorage.getItem('user')));
+    }
+})
 
 </script>
 
@@ -91,7 +89,7 @@ watch(productArray, () => {
             <q-toolbar class="col-2">
                 <q-toolbar-title class="text-weight-bold  text-accent text-h4">Exclusive</q-toolbar-title>
             </q-toolbar>
-            <div class="col-6 q-pa-sm">
+            <div class="col-5 q-pa-sm">
                 <nav class="row wrap justify-evenly">
                     <q-btn flat label="Home" outline @click="$router.push('/')"
                         :class="{ 'active-link': isActiveRoute('/') }" />
@@ -105,11 +103,26 @@ watch(productArray, () => {
                         :class="{ 'active-link': isActiveRoute('/about') }" />
                 </nav>
             </div>
-            <div class="col-4">
+            <div class="col-5">
                 <div class="row items-center justify-evenly">
                     <SearchInput />
                     <i class="fa-regular fa-heart fa-2x" @click="favourite"></i>
-                    <i class="fa-regular fa-user fa-2x" @click="signOut"></i>
+                    <div class="row text-black">
+                        <div class="q-mt-sm q-ml-sm">
+                            {{ user ? user.username : '' }}
+                        </div>
+                        <div v-if="user">
+                            <q-btn-dropdown color="black" flat style="width: 5px; height:5px">
+                                <q-list>
+                                    <q-item clickable v-close-popup @click="signOut()">
+                                        <q-item-section>
+                                            <q-item-label>Sign Out</q-item-label>
+                                        </q-item-section>
+                                    </q-item>
+                                </q-list>
+                            </q-btn-dropdown>
+                        </div>
+                    </div>
                     <div class="row">
                         <i class="fa-solid fa-cart-plus fa-2x" @click="cart"></i>
                         <div class="cart">
@@ -160,7 +173,7 @@ watch(productArray, () => {
                     <div align="center">
                         <q-btn color="accent" text-color="white" label="UPDATE CART" :disable="hasError" class="q-my-lg"
                             @click="update"></q-btn>
-                        <q-btn color="accent" text-color="white" label="PROCCED TO CART" :disable="hasError"
+                        <q-btn color="accent" text-color="white" label="PROCEED TO CART" :disable="hasError"
                             class="q-my-lg q-ml-md" @click="Proccedtocart"></q-btn>
                     </div>
                 </template>
@@ -211,7 +224,7 @@ div nav a.router-link-exact-active:hover {
     background-color: red;
     border-radius: 100%;
     top: 15%;
-    right: 10px;
+    right: 15px;
 }
 
 .custom-drawer {

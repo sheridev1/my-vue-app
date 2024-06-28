@@ -3,9 +3,12 @@
 import axios from 'axios';
 import { ref, onMounted } from "vue"
 import { useRouter, useRoute } from 'vue-router';
+import { getCartStore } from '../store/addtocart';
+
+
 const router = useRouter();
 const route = useRoute();
-
+const cartStore = getCartStore();
 const form = ref({
     username: " ",
     email: " ",
@@ -24,12 +27,15 @@ const onSubmit = async (e) => {
         const id_User = response.data.user._id;
         console.log('Registration successful:', response.data.user);
         if (token) {
+            localStorage.setItem('user', JSON.stringify(response.data.user))
             localStorage.setItem('id_User', id_User);
             localStorage.setItem('authToken', token);
-            // console.log(localStorage.getItem('authToken'))
-            // console.log(route.query.redirect)
+            // cartStore.setToken(token);
+            cartStore.setUser(response.data.user);
+
+
             const id = route.query.productid;
-           // console.log(id)
+            // console.log(id)
             if (route.query.redirect === 'order') {
                 router.push({ name: 'order', params: { id: id } });
             }

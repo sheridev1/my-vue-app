@@ -8,6 +8,8 @@ export const getCartStore = defineStore('cart', {
       user: null,
       item: [],
     },
+    token: localStorage.getItem('authToken') || null,
+    user:  JSON.parse(localStorage.getItem('user')) || null,
     product: 0,
     loading: false,
     cartLoading: false,
@@ -214,6 +216,22 @@ export const getCartStore = defineStore('cart', {
       this.productArray.splice(index, 1);
       this.lengthCart();
       this.updateCart();
+    },
+    setToken(token) {
+      this.token = token;
+      localStorage.setItem('authToken', token);
+    },
+    setUser(user) {
+      console.log('user data',user)
+      this.user=user
+      // localStorage.setItem('user', JSON.stringify({ user:this.user }));
+    },
+    signOut() {
+      this.token = null;
+      this.user = null;
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('id_User');
+      localStorage.removeItem('user')
     },
   },
 });

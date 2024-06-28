@@ -12,78 +12,104 @@ import OrderPage from '../view/OrderPage.vue'
 import Favourite from '../view/favourite.vue'
 import SearchedPage from '../view/SearchedPage.vue';
 import CategoryComp from "../components/CategoryComp.vue"
-
+import FloatingBtn from '../components/FloatingBtn.vue'
+import Admin from '../view/Admin.vue'
+import MyLayout from '../layout/MyLayout.vue'
+import AdminLayout from '../layout/AdminLayout.vue'
 const router = createRouter({
 
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/register',
-      name: 'register',
-      component: Register
-
-    },
-    {
       path: '/',
-      name: 'Home',
-      component: HomePage
-    },
-    {
-      path: '/contact',
-      name: 'contact',
-      component: ContactPage
-    }
-    , {
-      path: '/login',
-      name: 'login',
-      component: LoginPage
-    },
-    {
-      path: '/about',
-      name: 'about',
-      component: AboutPage
-    },
-    {
-      path: '/allproducts/featured=:featured/category=:category?/page=:page?',
-      name: 'allproducts',
-      component: ProductsComp,
-      props: true,
+      component: MyLayout,
+      children: [
+        { path: '', component: HomePage,meta: { showFloatingButton: true } },
+        {
+          path: '/register',
+          name: 'register',
+          component: Register,
+          meta: { showFloatingButton: false },
+        },
+        {
+          path: '/contact',
+          name: 'contact',
+          component: ContactPage,
+          meta: { showFloatingButton: true },
+        }
+        , {
+          path: '/login',
+          name: 'login',
+          component: LoginPage,
+          meta: { showFloatingButton: false },
+        },
+        {
+          path: '/about',
+          name: 'about',
+          component: AboutPage,
+          meta: { showFloatingButton: true },
+        },
+        {
+          path: '/allproducts/featured=:featured/category=:category?/page=:page?',
+          name: 'allproducts',
+          component: ProductsComp,
+          props: true,
+          meta: { showFloatingButton: false },
+        },
+        {
+          path: '/product/:id',
+          name: 'ProductDetail',
+          component: ProductDetail,
+          props: true,
+          meta: { showFloatingButton: false },
 
+        }, {
+          path: '/cart',
+          name: 'cart',
+          component: AddToCart,
+          props: true,
+          meta: { showFloatingButton: false },
+        },
+        {
+          path: '/order/:id?',
+          name: 'order',
+          component: OrderPage,
+          meta: { showFloatingButton: false },
+        },
+        {
+          path: '/favourite',
+          name: 'favourite',
+          component: Favourite,
+          meta: { showFloatingButton: false },
+        },
+        {
+          path: '/search/search=:search/page=:page?',
+          name: 'search',
+          component: SearchedPage,
+          props: true,
+          meta: { showFloatingButton: false },
+        },
+        {
+          path: '/category',
+          name: 'catgory',
+          component: CategoryComp,
+          meta: { showFloatingButton: false },
+        },
+
+      ],
+    },
+    {
+      path: '/admin',
+      component: AdminLayout,
+      children: [
+        { path: '', component: Admin, meta: { showFloatingButton: false }, },
+       
+      ],
     },
 
-    {
-      path: '/product/:id',
-      name: 'ProductDetail',
-      component: ProductDetail,
-      props: true,
 
-    }, {
-      path: '/cart',
-      name: 'cart',
-      component: AddToCart,
-      props: true
-    },
-    {
-      path: '/order/:id?',
-      name: 'order',
-      component: OrderPage
-    },
-    {
-      path: '/favourite',
-      name: 'favourite',
-      component: Favourite
-    },
-    {
-      path: '/search/search=:search/page=:page?',
-      name: 'search',
-      component: SearchedPage,
-      props: true
-    },
-    {
-      path:'/category',
-      name:'catgory',
-      component:CategoryComp
-    }
+
+
   ]
 
 
@@ -116,7 +142,7 @@ router.beforeEach((to, from, next) => {
 
   // If the cart drawer is open, close it
   if (isCartOpen) {
-   
+
 
     // Dispatch an action to close the cart drawer
     cartStore.isCartDrawerOpen = false;

@@ -22,6 +22,7 @@ const onSubmit = async (e) => {
         const token = response.data.token;
        // console.log('Registration successful:', response.data);
         if (token) {
+            localStorage.setItem('user', JSON.stringify(response.data))
             localStorage.setItem('authToken', token);
             router.push('/'); // Redirect to home page
         }
