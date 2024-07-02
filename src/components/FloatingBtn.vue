@@ -55,12 +55,14 @@
   const message = ref('');
   const messages = ref([]); // Array to store chat messages
   const chatMessages = ref(null);
-  
+  const userName = ref(null);
   const checkLoginStatus = () => {
     const user = localStorage.getItem('user');
     if (user) {
       const userData = JSON.parse(user);
       console.log("userData", userData._id);
+      console.log("username",userName.value);
+      userName.value = userData.username;
       userId.value = userData._id; // Assuming user data has an 'id' field
       isLoggedIn.value = true;
     } else {
@@ -71,8 +73,8 @@
   const openPopup = () => {
     checkLoginStatus();
     if (isLoggedIn.value) {
-      socket.emit('join', userId.value);
-    }
+    socket.emit('join', userId.value, userName.value); // Pass userName.value instead of userName
+  }
     isPopupOpen.value = true;
     nextTick(() => {
       setTimeout(scrollToBottom, 50);
@@ -91,11 +93,12 @@
   
     const msg = {
       content: message.value,
-      sent: true
+      sent: true, 
+      username:userName.value
     };
     messages.value.push(msg);
     console.log('Message sent:', message.value);
-    socket.emit('message', { userId: userId.value, message: message.value });
+    socket.emit('message', { userId: userId.value, message: message.value , username:userName.value});
     message.value = '';
     nextTick(() => {
       setTimeout(scrollToBottom, 50);

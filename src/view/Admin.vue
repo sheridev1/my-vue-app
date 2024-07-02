@@ -23,7 +23,7 @@
     <div class="main-container q-pa-none q-gutter-sm">
       <div v-if="selectedClient" class="chat-container">
         <div class="q-px-md">
-          <h6>Chat with {{ selectedClient.name }}</h6>
+          <h6>Chat with {{ selectedClient.name }}</h6> <!-- Updated to client.name -->
           <q-separator color="black" />
         </div>
 
@@ -58,7 +58,6 @@
   </div>
 </template>
 
-
 <script setup>
 import { ref, onMounted, nextTick } from 'vue';
 import io from "socket.io-client";
@@ -79,6 +78,8 @@ onMounted(() => {
   console.log('Admin component mounted');
   socket.emit('adminJoin');
 
+  console.log("Clients", clients.value);
+
   socket.on('activeRooms', (activeRooms) => {
     console.log('Active rooms:', activeRooms);
     clients.value = Object.values(activeRooms);
@@ -90,55 +91,69 @@ onMounted(() => {
       messages.value.push({
         id: messages.value.length,
         text: data.message,
-        sent: false
+        sent: false,
+        username: data.username
       });
       nextTick(() => {
         setTimeout(scrollToBottom, 50);
       });
-      showNotification('New Message', { body: data.message });
+     
     } else {
       if (!newMessagesCount.value[data.userId]) {
         newMessagesCount.value[data.userId] = 1;
       }
       else {
         newMessagesCount.value[data.userId]++;
+        
       }
     }
+    showNotification('New Message', { body: data.message });
   });
 
   socket.on('previousMessages', (previousMessages) => {
     console.log('Previous messages:', previousMessages);
-    if (selectedClient.value && previousMessages.userId === selectedClient.value.id) {
+    console.log('Previous messages:', previousMessages.messages);
+    
+    if (previousMessages && Array.isArray(previousMessages.messages)) {
       messages.value = previousMessages.messages.map((msg, index) => ({
         id: index,
         text: msg.message,
-        sent: msg.sentBy === 'admin'
+        sent: msg.sentBy === 'admin',
+        username: msg.username
       }));
-      nextTick(() => {
-        scrollToBottom();
-      });
+    } else {
+      messages.value = [];
     }
+    nextTick(() => {
+      scrollToBottom();
+    });
   });
 });
 
 const selectClient = (client) => {
   selectedClient.value = client;
-  newMessagesCount.value[client.id]=0;
+  
+  newMessagesCount.value[client.id] = 0;
   messages.value = []; // Clear messages when a new client is selected
   socket.emit('fetchMessages', client.id);
 
   socket.on('previousMessages', (previousMessages) => {
     console.log('Previous messages:', previousMessages);
-    messages.value = previousMessages.map((msg, index) => ({
-      id: index,
-      text: msg.message,
-      sent: msg.sentBy === 'admin'
-    }));
-
+    console.log('Previous messages:', previousMessages.messages);
+    
+    if (previousMessages && Array.isArray(previousMessages.messages)) {
+      messages.value = previousMessages.messages.map((msg, index) => ({
+        id: index,
+        text: msg.message,
+        sent: msg.sentBy === 'admin',
+        username: msg.username
+      }));
+    } else {
+      messages.value = [];
+    }
     nextTick(() => {
-      setTimeout(scrollToBottom, 50);
+      scrollToBottom();
     });
-    console.log("tick")
   });
 };
 
@@ -147,10 +162,11 @@ const sendMessage = () => {
     const msg = {
       id: messages.value.length,
       text: newMessage.value,
-      sent: true
+      sent: true,
+      username: 'Admin'
     };
     messages.value.push(msg);
-    socket.emit('adminMessage', { userId: selectedClient.value.id, message: newMessage.value });
+    socket.emit('adminMessage', { userId: selectedClient.value.id, message: newMessage.value, username: 'Admin' });
     newMessage.value = '';
     nextTick(() => {
       setTimeout(scrollToBottom, 50);
@@ -160,15 +176,13 @@ const sendMessage = () => {
 
 const scrollToBottom = () => {
   const el = chatMessages.value;
-  console.log("ref", el)
+  console.log("ref", el);
   if (el) {
     el.scrollTop = el.scrollHeight;
-    console.log("el", el.scrollTop)
+    console.log("el", el.scrollTop);
   }
-
 };
 </script>
-
 
 <style scoped>
 .admin-page {
@@ -208,10 +222,10 @@ const scrollToBottom = () => {
   height: 100%;
 }
 
-.new-messages-counter{
+.new-messages-counter {
   position: absolute;
   top: 10px;
-  right:10px;
+  right: 10px;
   background-color: red;
   color: #e0e0e0;
   border-radius: 50%;
@@ -219,6 +233,5 @@ const scrollToBottom = () => {
   width: 20px;
   height: 20px;
   text-align: center;
-
 }
 </style>
