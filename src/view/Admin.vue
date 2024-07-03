@@ -32,7 +32,11 @@
           <div style="flex-grow: 1; min-height: calc(100vh - 400px); overflow-y: auto;" class="q-pa-md"
             ref="chatMessages">
             <div>
-              <q-chat-message v-for="msg in messages" :key="msg.id" :text="[msg.text]" :sent="msg.sent" :stamp="formatTimestamp(msg.timestamp)"/>
+              <template v-for="(group, index) in groupedMessages" :key="index">
+                <div class="date-separator">{{ group.date }}</div>
+                <q-chat-message v-for="(msg, idx) in group.messages" :key="idx" :text="[msg.text]" :sent="msg.sent"
+                  :stamp="formatTimestamp(msg.timestamp)" />
+              </template>
             </div>
           </div>
 
@@ -59,19 +63,17 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick } from 'vue';
+import { ref, onMounted, nextTick, computed } from 'vue';
 import io from "socket.io-client";
-import { useQuasar } from 'quasar'
+import { useQuasar } from 'quasar';
 
 const clients = ref([]);
 const selectedClient = ref(null);
 const messages = ref([]);
 const newMessage = ref('');
 const newMessagesCount = ref({});
-
-// Define chatMessages ref to reference the chat container element
 const chatMessages = ref(null);
-const $q = useQuasar()
+const $q = useQuasar();
 const socket = io('http://localhost:5000');
 
 onMounted(() => {
@@ -98,26 +100,23 @@ onMounted(() => {
       nextTick(() => {
         setTimeout(scrollToBottom, 50);
       });
-     
     } else {
       if (!newMessagesCount.value[data.userId]) {
         newMessagesCount.value[data.userId] = 1;
-      }
-      else {
+      } else {
         newMessagesCount.value[data.userId]++;
-        
       }
+      $q.notify({
+        message: `New Message From ${data.username} "${data.message}"`,
+        color: 'accent'
+      });
     }
-    $q.notify({
-          message: `New Message From ${data.username} "${data.message}"`,
-          color: 'accent'
-        })
   });
 
   socket.on('previousMessages', (previousMessages) => {
     console.log('Previous messages:', previousMessages);
     console.log('Previous messages:', previousMessages.messages);
-    
+
     if (previousMessages && Array.isArray(previousMessages.messages)) {
       messages.value = previousMessages.messages.map((msg, index) => ({
         id: index,
@@ -137,7 +136,6 @@ onMounted(() => {
 
 const selectClient = (client) => {
   selectedClient.value = client;
-  
   newMessagesCount.value[client.id] = 0;
   messages.value = []; // Clear messages when a new client is selected
   socket.emit('fetchMessages', client.id);
@@ -145,14 +143,14 @@ const selectClient = (client) => {
   socket.on('previousMessages', (previousMessages) => {
     console.log('Previous messages:', previousMessages);
     console.log('Previous messages:', previousMessages.messages);
-    
+
     if (previousMessages && Array.isArray(previousMessages.messages)) {
       messages.value = previousMessages.messages.map((msg, index) => ({
         id: index,
         text: msg.message,
         sent: msg.sentBy === 'admin',
         username: msg.username,
-        timestamp: msg.timestamp// Add timestamp
+        timestamp: msg.timestamp // Add timestamp
       }));
     } else {
       messages.value = [];
@@ -173,7 +171,7 @@ const sendMessage = () => {
       timestamp: new Date().toISOString() // Add timestamp
     };
     messages.value.push(msg);
-    socket.emit('adminMessage', { userId: selectedClient.value.id, message: newMessage.value, username: 'Admin' , timestamp: msg.timestamp });
+    socket.emit('adminMessage', { userId: selectedClient.value.id, message: newMessage.value, username: 'Admin', timestamp: msg.timestamp });
     newMessage.value = '';
     nextTick(() => {
       setTimeout(scrollToBottom, 50);
@@ -190,11 +188,43 @@ const scrollToBottom = () => {
   }
 };
 
+// Function to format timestamp to a readable format
 const formatTimestamp = (timestamp) => {
   const date = new Date(timestamp);
-  return date.toLocaleTimeString('en-US', { hour12: true });; // Format the date to a readable string
+  return date.toLocaleTimeString('en-US', { hour12: true });
 };
+
+// Function to format date to a readable format
+const formatDate = (timestamp) => {
+  const date = new Date(timestamp);
+  return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+};
+
+// Computed property to group messages by day
+const groupedMessages = computed(() => {
+  const groups = [];
+  let currentGroup = { date: '', messages: [] };
+
+  messages.value.forEach((msg) => {
+    const msgDate = formatDate(msg.timestamp);
+    if (msgDate !== currentGroup.date) {
+      if (currentGroup.messages.length > 0) {
+        groups.push(currentGroup);
+      }
+      currentGroup = { date: msgDate, messages: [msg] };
+    } else {
+      currentGroup.messages.push(msg);
+    }
+  });
+
+  if (currentGroup.messages.length > 0) {
+    groups.push(currentGroup);
+  }
+
+  return groups;
+});
 </script>
+
 
 <style scoped>
 .admin-page {
@@ -210,7 +240,7 @@ const formatTimestamp = (timestamp) => {
 }
 
 .q-item-selected {
-  background-color: #f0f0f0;
+  background-color: #DB4444;
   color: #000;
 }
 
@@ -244,12 +274,18 @@ const formatTimestamp = (timestamp) => {
   position: absolute;
   top: 10px;
   right: 10px;
-  background-color: red;
+  background-color: #DB4444;
   color: #e0e0e0;
   border-radius: 50%;
   font-size: 12px;
   width: 20px;
   height: 20px;
   text-align: center;
+}
+
+.date-separator {
+  text-align: center;
+  font-weight: bold;
+  margin: 10px 0;
 }
 </style>
