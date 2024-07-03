@@ -32,7 +32,7 @@
           <div style="flex-grow: 1; min-height: calc(100vh - 400px); overflow-y: auto;" class="q-pa-md"
             ref="chatMessages">
             <div>
-              <q-chat-message v-for="msg in messages" :key="msg.id" :text="[msg.text]" :sent="msg.sent" />
+              <q-chat-message v-for="msg in messages" :key="msg.id" :text="[msg.text]" :sent="msg.sent" :stamp="formatTimestamp(msg.timestamp)"/>
             </div>
           </div>
 
@@ -61,7 +61,7 @@
 <script setup>
 import { ref, onMounted, nextTick } from 'vue';
 import io from "socket.io-client";
-import { showNotification } from '../components/ShowNotification';
+import { useQuasar } from 'quasar'
 
 const clients = ref([]);
 const selectedClient = ref(null);
@@ -71,7 +71,7 @@ const newMessagesCount = ref({});
 
 // Define chatMessages ref to reference the chat container element
 const chatMessages = ref(null);
-
+const $q = useQuasar()
 const socket = io('http://localhost:5000');
 
 onMounted(() => {
@@ -92,7 +92,8 @@ onMounted(() => {
         id: messages.value.length,
         text: data.message,
         sent: false,
-        username: data.username
+        username: data.username,
+        timestamp: data.timestamp
       });
       nextTick(() => {
         setTimeout(scrollToBottom, 50);
@@ -107,7 +108,10 @@ onMounted(() => {
         
       }
     }
-    showNotification('New Message', { body: data.message });
+    $q.notify({
+          message: `New Message From ${data.username} "${data.message}"`,
+          color: 'accent'
+        })
   });
 
   socket.on('previousMessages', (previousMessages) => {
@@ -119,7 +123,8 @@ onMounted(() => {
         id: index,
         text: msg.message,
         sent: msg.sentBy === 'admin',
-        username: msg.username
+        username: msg.username,
+        timestamp: msg.timestamp // Add timestamp
       }));
     } else {
       messages.value = [];
@@ -146,7 +151,8 @@ const selectClient = (client) => {
         id: index,
         text: msg.message,
         sent: msg.sentBy === 'admin',
-        username: msg.username
+        username: msg.username,
+        timestamp: msg.timestamp// Add timestamp
       }));
     } else {
       messages.value = [];
@@ -163,10 +169,11 @@ const sendMessage = () => {
       id: messages.value.length,
       text: newMessage.value,
       sent: true,
-      username: 'Admin'
+      username: 'Admin',
+      timestamp: new Date().toISOString() // Add timestamp
     };
     messages.value.push(msg);
-    socket.emit('adminMessage', { userId: selectedClient.value.id, message: newMessage.value, username: 'Admin' });
+    socket.emit('adminMessage', { userId: selectedClient.value.id, message: newMessage.value, username: 'Admin' , timestamp: msg.timestamp });
     newMessage.value = '';
     nextTick(() => {
       setTimeout(scrollToBottom, 50);
@@ -181,6 +188,11 @@ const scrollToBottom = () => {
     el.scrollTop = el.scrollHeight;
     console.log("el", el.scrollTop);
   }
+};
+
+const formatTimestamp = (timestamp) => {
+  const date = new Date(timestamp);
+  return date.toLocaleTimeString('en-US', { hour12: true });; // Format the date to a readable string
 };
 </script>
 
@@ -213,6 +225,12 @@ const scrollToBottom = () => {
   display: flex;
   flex-direction: column;
   height: 100%;
+}
+
+.timestamp {
+  font-size: 0.8em;
+  color: gray;
+  margin-top: 2px;
 }
 
 .no-client-selected {

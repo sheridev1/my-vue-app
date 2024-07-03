@@ -18,8 +18,9 @@
               <div v-if="messages.length === 0" class="text-center q-pa-md text-grey">
                 Type to chat with help support
               </div>
-              <q-chat-message v-for="(msg, index) in messages" :key="index" :text="[msg.content]"
-                :sent="msg.sent" />
+              <q-chat-message v-for="(msg, index) in messages" :key="index" :text="[msg.text]"
+                :sent="msg.sent" :stamp="formatTimestamp(msg.timestamp)" >
+                </q-chat-message>
             </div>
           </div>
           <div v-if="isLoggedIn">
@@ -51,7 +52,7 @@
 <script setup>
 import { ref, onMounted, nextTick } from 'vue';
 import io from "socket.io-client";
-import { showNotification } from './ShowNotification';
+import { useQuasar } from 'quasar'
 
 const socket = io('http://localhost:5000');
 
@@ -62,7 +63,7 @@ const message = ref('');
 const messages = ref([]); // Array to store chat messages
 const chatMessages = ref(null);
 const userName = ref(null);
-
+const $q = useQuasar()
 const checkLoginStatus = () => {
   const user = localStorage.getItem('user');
   if (user) {
@@ -95,14 +96,16 @@ const sendMessage = () => {
     console.error('User ID not found. Cannot send message.');
     return;
   }
-
+  
   const msg = {
-    content: message.value,
-    sent: true, 
-    username: userName.value
+    id: Date.now(),
+    text: message.value,
+    sent: true,
+    username: userName.value,
+    timestamp: new Date().toISOString() // Add timestamp
   };
   messages.value.push(msg);
-  socket.emit('message', { userId: userId.value, message: message.value, username: userName.value });
+  socket.emit('message', { userId: userId.value, message: message.value, username: userName.value ,timestamp: msg.timestamp});
   message.value = '';
   nextTick(() => {
     setTimeout(scrollToBottom, 50);
@@ -117,17 +120,33 @@ const endChat = () => {
   }
 };
 
+// Function to format timestamp to a readable format
+const formatTimestamp = (timestamp) => {
+  const date = new Date(timestamp);
+  return date.toLocaleTimeString('en-US', { hour12: true });; // Format the date to a readable string
+};
+
 onMounted(() => {
+  console.log("MOUNTED")
   socket.on('message', (data) => {
     messages.value.push({
-      content: data.message,
+      timestamp: data.timestamp,
+      text: data.message,
       sent: false
     });
-    showNotification("New Message", { body: data.message });
+    
     nextTick(() => {
       setTimeout(scrollToBottom, 50);
     });
+    console.log("Data",data)
+    //showNotification("New Message", { body: data.message });
+
+    $q.notify({
+          message: `New Message From Admin "${data.message}"`,
+          color: 'accent'
+        })
   });
+  
 });
 
 const scrollToBottom = () => {
