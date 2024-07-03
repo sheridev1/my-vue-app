@@ -4,7 +4,19 @@
     <div class="sidebar q-pa-none q-gutter-sm">
       <q-list class="text-black">
         <q-item-label header>Clients</q-item-label>
-        <q-item v-for="client in clients" :key="client.id" clickable @click="selectClient(client)"
+
+        <!-- Search bar with q-input -->
+        <div style="width:280px;" class="justify-center q-ml-sm q-mb-md">
+          <q-input clearable filled color="accent" v-model="searchTerm" label="Search here"/>
+        </div>
+
+        <!-- Client list -->
+        <q-item v-if="filteredClients.length === 0" align="center">
+          <q-item-section class="text-grey">
+            No results found
+          </q-item-section>
+        </q-item>
+        <q-item v-for="client in filteredClients" :key="client.id" clickable @click="selectClient(client)"
           :class="{ 'q-item-selected': client.id === selectedClient?.id }">
           <q-item-section avatar>
             <q-avatar>
@@ -15,6 +27,9 @@
           <q-item-section v-if="newMessagesCount[client.id]" class="new-messages-counter">
             {{ newMessagesCount[client.id] }}
           </q-item-section>
+
+
+
         </q-item>
       </q-list>
     </div>
@@ -23,7 +38,7 @@
     <div class="main-container q-pa-none q-gutter-sm">
       <div v-if="selectedClient" class="chat-container">
         <div class="q-px-md">
-          <h6>Chat with {{ selectedClient.name }}</h6> <!-- Updated to client.name -->
+          <h6>Chat with {{ selectedClient.name }}</h6>
           <q-separator color="black" />
         </div>
 
@@ -62,6 +77,7 @@
   </div>
 </template>
 
+
 <script setup>
 import { ref, onMounted, nextTick, computed } from 'vue';
 import io from "socket.io-client";
@@ -73,14 +89,15 @@ const messages = ref([]);
 const newMessage = ref('');
 const newMessagesCount = ref({});
 const chatMessages = ref(null);
+const searchTerm = ref(''); // Added for search term
+const selectedSearchClient = ref(null); // Added for the selected client in the search bar
 const $q = useQuasar();
 const socket = io('http://localhost:5000');
 
+// Fetch initial data and set up socket listeners
 onMounted(() => {
   console.log('Admin component mounted');
   socket.emit('adminJoin');
-
-  console.log("Clients", clients.value);
 
   socket.on('activeRooms', (activeRooms) => {
     console.log('Active rooms:', activeRooms);
@@ -134,6 +151,7 @@ onMounted(() => {
   });
 });
 
+// Function to select a client and fetch messages
 const selectClient = (client) => {
   selectedClient.value = client;
   newMessagesCount.value[client.id] = 0;
@@ -161,6 +179,25 @@ const selectClient = (client) => {
   });
 };
 
+// // Function to handle input in search bar
+// const handleInput = (val) => {
+//   searchTerm.value = val || ''; // Ensure searchTerm is not null or undefined
+//   handleSearch();
+// };
+
+// // Function to handle search
+// const handleSearch = () => {
+//   // Filter clients based on search term
+//   if (searchTerm.value) {
+//     const searchTermLower = searchTerm.value.toLowerCase();
+//     clients.value = clients.value.filter(client => client.name.toLowerCase().includes(searchTermLower));
+//   } else {
+//     // Reset to original clients list if search term is empty
+//     clients.value = Object.values(activeRooms);
+//   }
+// };
+
+// Function to send a message
 const sendMessage = () => {
   if (selectedClient.value) {
     const msg = {
@@ -179,12 +216,11 @@ const sendMessage = () => {
   }
 };
 
+// Function to scroll chat messages to bottom
 const scrollToBottom = () => {
   const el = chatMessages.value;
-  console.log("ref", el);
   if (el) {
     el.scrollTop = el.scrollHeight;
-    console.log("el", el.scrollTop);
   }
 };
 
@@ -222,6 +258,14 @@ const groupedMessages = computed(() => {
   }
 
   return groups;
+});
+
+// Computed property to filter clients based on search input
+const filteredClients = computed(() => {
+  const lowerCaseSearchTerm = (searchTerm.value || '').toLowerCase(); // Ensure searchTerm is not null or undefined
+  return clients.value.filter(client =>
+    client.name.toLowerCase().includes(lowerCaseSearchTerm)
+  );
 });
 </script>
 
