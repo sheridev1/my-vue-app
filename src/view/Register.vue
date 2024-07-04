@@ -20,6 +20,7 @@ const onSubmit = async (e) => {
         visible.value = true;
         const response = await axios.post('http://localhost:5000/api/signup', form.value);
         const token = response.data.token;
+        const id_User = response.data.user._id;
        // console.log('Registration successful:', response.data);
         if (token) {
             localStorage.setItem('user', JSON.stringify(response.data))

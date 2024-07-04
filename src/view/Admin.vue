@@ -316,7 +316,7 @@ const filteredClients = computed(() => {
 
 .new-messages-counter {
   position: absolute;
-  top: 10px;
+  top: 20px;
   right: 10px;
   background-color: #DB4444;
   color: #e0e0e0;

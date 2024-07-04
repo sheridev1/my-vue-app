@@ -17,6 +17,13 @@ const form = ref({
 const visible = ref(false);
 const errorMessage = ref('');
 
+const onReset=()=>{
+    form.value=({
+    username: " ",
+    email: " ",
+    password: ""
+})
+}
 
 const onSubmit = async (e) => {
     console.log(form.value)
@@ -94,7 +101,7 @@ const onSubmit = async (e) => {
                     <div align="center" v-if="errorMessage" class="q-mt-md text-accent">{{ errorMessage }}</div>
                     <div align="center">
                         <q-btn label="Login" type="submit" color="accent" />
-                        <q-btn label="Reset" type="reset" color="black" flat class="q-ml-sm" />
+                        <q-btn label="Reset" type="reset" color="black" flat class="q-ml-sm"  @click="reset"/>
                     </div>
                 </q-form>
             </div>
