@@ -11,8 +11,6 @@ const route=useRoute();
 const handleClickOutside = () => {
   cartStore.isCartDrawerOpen = false;
 }
-
-
 console.log("Routes",route.params.id)
 </script>
 
@@ -20,7 +18,6 @@ console.log("Routes",route.params.id)
   <q-layout view="hHh lpR fff">
     <!-- header -->
     <NavBar />
-    
     <q-page-container>
       <!-- <BreadCrumbs /> -->
       <div :class="{ 'blur-background': cartStore.isCartDrawerOpen }" @click="handleClickOutside">
@@ -29,9 +26,7 @@ console.log("Routes",route.params.id)
       </div>
     </q-page-container>
     <!--footer  -->
-    
     <FooterComp />
-   
   </q-layout>
 </template>
 

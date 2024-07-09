@@ -27,7 +27,6 @@ const props = defineProps({
 
 const onProgress = (e) => {
     const [swiper, progress] = e.detail;
-
 };
 const imageUrls = [slide1, slide2, slide3, 'https://cdn.quasar.dev/img/mountains.jpg'];
 let IMAGEURL = slide1

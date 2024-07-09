@@ -29,7 +29,7 @@
             </div>
           </div>
           <div v-if="isLoggedIn">
-            <div>
+            <div> 
               <q-card-section>
                 <div class="row" align="center">
                   <div class="col-10">

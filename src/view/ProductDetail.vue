@@ -100,6 +100,8 @@ const addtocart = (id) => {
     if (count.value >= 1) {
         let param = route.params.id;
         let cart = localStorage.getItem('cart')
+        console.log("local cart ", cart)
+
         cartStore.localcart(cart, param);
         
         if (cart) {

@@ -17,12 +17,12 @@ const form = ref({
 const visible = ref(false);
 const errorMessage = ref('');
 
-const onReset=()=>{
-    form.value=({
-    username: " ",
-    email: " ",
-    password: ""
-})
+const onReset = () => {
+    form.value = ({
+        username: " ",
+        email: " ",
+        password: ""
+    })
 }
 
 const onSubmit = async (e) => {
@@ -40,29 +40,29 @@ const onSubmit = async (e) => {
             // cartStore.setToken(token);
             cartStore.setUser(response.data.user);
 
-
-            const id = route.query.productid;
-            // console.log(id)
-            if (route.query.redirect === 'order') {
-                router.push({ name: 'order', params: { id: id } });
-            }
-            else if (route.query.redirect === 'productDetail') {
-                console.log(route.query.redirect)
-                router.push({ name: 'ProductDetail', params: { id } })
-
+            const userRole = response.data.user.role;
+            if (userRole === 'admin') {
+                router.push('/admin');
             }
             else {
-                router.push('/');
+                const id = route.query.productid;
+                // console.log(id)
+                if (route.query.redirect === 'order') {
+                    router.push({ name: 'order', params: { id: id } });
+                }
+                else if (route.query.redirect === 'productDetail') {
+                    console.log(route.query.redirect)
+                    router.push({ name: 'ProductDetail', params: { id } })
+                }
+                else {
+                    router.push('/');
+                }
             }
-
-
             // Redirect to home page
         }
         else {
             router.push('/login')
-
         }
-
     }
     catch (error) {
         console.log(error)
@@ -101,7 +101,7 @@ const onSubmit = async (e) => {
                     <div align="center" v-if="errorMessage" class="q-mt-md text-accent">{{ errorMessage }}</div>
                     <div align="center">
                         <q-btn label="Login" type="submit" color="accent" />
-                        <q-btn label="Reset" type="reset" color="black" flat class="q-ml-sm"  @click="reset"/>
+                        <q-btn label="Reset" type="reset" color="black" flat class="q-ml-sm" @click="reset" />
                     </div>
                 </q-form>
             </div>

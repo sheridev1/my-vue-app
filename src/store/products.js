@@ -7,6 +7,7 @@ export const useProductsStore = defineStore("products", {
     state: () => ({
         products: [],
         filtered: [],
+        success: "",
         limitedProducts: [],
         limitedCategory: [],
         searchedProduct: [],
@@ -18,14 +19,69 @@ export const useProductsStore = defineStore("products", {
         productPerpage: 4,
         hasMoreProducts: true,
         userHasReviewed: true,
+        categories: [],
+        companies: []
+
     }),
     actions: {
+        async addProduct(product) {
+            this.visible = true;
+            this.errorMessages = "";
+            this.success = null;
+            try {
+                const response = await axios.post('http://localhost:5000/api/products/add', product, {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                this.success = 'Product added successfully';
+            } catch (error) {
+                this.errorMessages = 'Failed to add product';
+            } finally {
+                this.visible = false;
+            }
+
+        },
+        async fetchCategories() {
+            this.visible = true;
+            this.errorMessages = "";
+            try {
+                const response = await axios.get('http://localhost:5000/api/products/metadata');
+                this.categories = response.data.categories;
+                this.companies = response.data.companies;
+            } catch (error) {
+                console.error('Error fetching categories:', error);
+                this.errorMessages = 'Failed to fetch categories';
+            }
+        },
+        async deleteProduct(productId) {
+            try {
+                const response = await axios.delete(`http://localhost:5000/api/products/${productId}`);
+                const deletedProduct = response.data.product;
+                this.success = 'Product deleted successfully';
+              } catch (error) {
+                console.error('Error deleting product:', error);
+                throw new Error('Failed to delete product. Please try again later.');
+              }
+
+        },
+        async editProduct({ productId, updatedProduct }) {
+            this.success = null;
+            try {
+              const response = await axios.put(`http://localhost:5000/api/products/${productId}`, updatedProduct);
+              // Optionally, commit mutation to update the product in the store if needed
+              this.success = 'Product updated successfully';
+            } catch (error) {
+              console.error('Error editing product:', error);
+              throw error; // Handle or rethrow the error as needed
+            }
+          },          
         async fetchProducts() {
             this.visible = true;
             this.errorMessages = "";
 
             try {
-                const response = await axios.get("http://localhost:5000/api/products/");
+                const response = await axios.get("http://localhost:5000/api/products");
                 this.products = response.data.myData;
             } catch (error) {
                 this.errorMessage =
