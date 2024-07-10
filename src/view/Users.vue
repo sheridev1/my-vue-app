@@ -15,26 +15,51 @@
             </div>
         </div>
 
-        <div align="center">
-            <div class="cart row">
-                <div class="col-1">UserName</div>
-                <div class="col-4">Password</div>
-                <div class="col-3">Email</div>
-                <div class="col-2">Role</div>
-                <div class="col-2">Action</div>
-            </div>
-            <div class="row cart q-my-md justify-center items-center" v-for="item in filteredUsers" :key="item._id">
-                <div class="col-1">{{ item.username }}</div>
-                <div class="col-4 ellipsis">{{ item.password }}</div>
-                <div class="col-3">{{ item.email }}</div>
-                <div class="col-2">{{ item.role }}</div>
-                <div class="col-2 content-between q-gutter-x-md">
-                    <q-btn icon="edit" style="width: 10px;" color="green" @click="openPopup(item)" />
-                    <q-btn icon="delete" style="width: 10px;" color="negative" :disabled="disable" @click="onDelete(item._id)" />
+
+        <template v-if="loading">
+
+            <div align='center'>
+                <div class="row cart">
+                    <div class="col-3"><q-skeleton type="QBtn" /></div>
+                    <div class="col-3"><q-skeleton type="QBtn" /></div>
+                    <div class="col-3"><q-skeleton type="QBtn" /></div>
+                    <div class="col-3"><q-skeleton type="QBtn" /></div>
+
+                </div>
+
+                <div class="row cart q-mt-lg" v-for="i in 3" :key="i">
+                    <div class="col-3"><q-skeleton type="QBtn" /></div>
+                    <div class="col-3"><q-skeleton type="QBtn" /></div>
+                    <div class="col-3"><q-skeleton type="QBtn" /></div>
+                    <div class="col-3"><q-skeleton type="QBtn" /></div>
+
 
                 </div>
             </div>
-        </div>
+        </template>
+        <template v-else>
+            <div align="center">
+                <div class="cart row">
+                    <div class="col-1">UserName</div>
+                    <div class="col-4">Password</div>
+                    <div class="col-3">Email</div>
+                    <div class="col-2">Role</div>
+                    <div class="col-2">Action</div>
+                </div>
+                <div class="row cart q-my-md justify-center items-center" v-for="item in filteredUsers" :key="item._id">
+                    <div class="col-1">{{ item.username }}</div>
+                    <div class="col-4 ellipsis">{{ item.password }}</div>
+                    <div class="col-3">{{ item.email }}</div>
+                    <div class="col-2">{{ item.role }}</div>
+                    <div class="col-2 content-between q-gutter-x-md">
+                        <q-btn icon="edit" style="width: 10px;" color="green" @click="openPopup(item)" />
+                        <q-btn icon="delete" style="width: 10px;" color="negative" :disabled="disable"
+                            @click="onDelete(item._id)" />
+
+                    </div>
+                </div>
+            </div>
+        </template>
     </div>
 
     <!-- dialog -->
@@ -93,7 +118,7 @@ import axios from "axios";
 const $q = useQuasar();
 const searchTerm = ref("");
 const cartStore = getCartStore();
-const { getAllUsers, allusers, deleteUser, editUser } = storeToRefs(cartStore);
+const { getAllUsers, allusers, deleteUser, editUser, loading } = storeToRefs(cartStore);
 const isPopupOpen = ref(false);
 const getusers = computed(() => allusers.value);
 const Username = ref("");

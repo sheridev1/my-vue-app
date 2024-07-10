@@ -83,6 +83,7 @@ export const useProductsStore = defineStore("products", {
             try {
                 const response = await axios.get("http://localhost:5000/api/products");
                 this.products = response.data.myData;
+                this.visible = false;
             } catch (error) {
                 this.errorMessage =
                     error.response?.data?.message || "Failed to load products";

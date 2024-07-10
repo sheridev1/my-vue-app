@@ -19,7 +19,7 @@ export const getCartStore = defineStore("cart", {
     productArray: [],
     isCartDrawerOpen: false,
     allusers: 0,
-   iseditor :false
+    iseditor: false
   }),
   actions: {
     async addtoCart(product) {
@@ -253,14 +253,19 @@ export const getCartStore = defineStore("cart", {
     //GetUsers
     async getAllUsers() {
       this.errorMessages = "";
+      this.loading = true;
       try {
         const response = await axios.get("http://localhost:5000/api/getusers");
         this.allusers = response.data;
         this.success = "User fetched successfully";
+        this.loading = false;
       } catch (error) {
         console.error("Problem while fetching Users:", error);
         this.errorMessages = "Failed to fetch Users";
+      } finally {
+        this.loading = false;
       }
+
     },
     async deleteUser(userId) {
       this.errorMessages = "";
@@ -291,10 +296,10 @@ export const getCartStore = defineStore("cart", {
     },
     disable() {
       if (this.user.role == 'editor') {
-        this.iseditor=true;
-     }else{
-        this.iseditor=false
-     }
+        this.iseditor = true;
+      } else {
+        this.iseditor = false
+      }
     },
   },
 });

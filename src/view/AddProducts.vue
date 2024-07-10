@@ -16,27 +16,47 @@
       </div>
     </div>
 
-    <div align="center">
-      <div class="row cart">
-        <div class="col-1">Name</div>
-        <div class="col-3">Featured</div>
-        <div class="col-2">Price</div>
-        <div class="col-2">Category</div>
-        <div class="col-2">Company</div>
-        <div class="col-2">Action</div>
-      </div>
-      <div class="row cart q-my-md items-center" v-for="item in filteredProducts" :key="item.id">
-        <div class="col-1">{{ item.name }}</div>
-        <div class="col-3">{{ item.featured }}</div>
-        <div class="col-2">{{ item.price }}</div>
-        <div class="col-2">{{ item.category }}</div>
-        <div class="col-2">{{ item.company }}</div>
-        <div class="col-2 content-between q-gutter-x-md">
-          <q-btn icon="edit" style="width: 10px;" color="green" @click="openPopup(item)" />
-          <q-btn icon="delete" style="width: 10px;" color="negative" :disabled="disable" @click="onDelete(item._id)" />
+    <template v-if="visible">
+
+      <div align='center'>
+        <div class="row cart">
+          <div class="col-3"><q-skeleton type="QBtn" /></div>
+          <div class="col-3"><q-skeleton type="QBtn" /></div>
+          <div class="col-3"><q-skeleton type="QBtn" /></div>
+          <div class="col-3"><q-skeleton type="QBtn" /></div>
+        </div>
+        <div class="row cart q-mt-lg" v-for="i in 5" :key="i">
+          <div class="col-3"><q-skeleton type="QBtn" /></div>
+          <div class="col-3"><q-skeleton type="QBtn" /></div>
+          <div class="col-3"><q-skeleton type="QBtn" /></div>
+          <div class="col-3"><q-skeleton type="QBtn" /></div>
         </div>
       </div>
-    </div>
+    </template>
+    <template v-else>
+      <div align="center">
+        <div class="row cart">
+          <div class="col-1">Name</div>
+          <div class="col-3">Featured</div>
+          <div class="col-2">Price</div>
+          <div class="col-2">Category</div>
+          <div class="col-2">Company</div>
+          <div class="col-2">Action</div>
+        </div>
+        <div class="row cart q-my-md items-center" v-for="item in filteredProducts" :key="item.id">
+          <div class="col-1">{{ item.name }}</div>
+          <div class="col-3">{{ item.featured }}</div>
+          <div class="col-2">{{ item.price }}</div>
+          <div class="col-2">{{ item.category }}</div>
+          <div class="col-2">{{ item.company }}</div>
+          <div class="col-2 content-between q-gutter-x-md">
+            <q-btn icon="edit" style="width: 10px;" color="green" @click="openPopup(item)" />
+            <q-btn icon="delete" style="width: 10px;" color="negative" :disabled="disable"
+              @click="onDelete(item._id)" />
+          </div>
+        </div>
+      </div>
+    </template>
 
     <!-- dialog -->
     <q-dialog v-model="isPopupOpen">
@@ -111,6 +131,7 @@ const {
   companies,
   fetchProducts,
   products,
+  visible
 } = storeToRefs(productStore);
 const disable = computed(() => cartStore.iseditor)
 const searchTerm = ref("");
