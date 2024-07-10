@@ -1,7 +1,6 @@
 <template>
   <div>
     <!-- Bar Chart -->
-
     <div class="row">
       <div class="col-6">
         <div class="text-h5 text-bold">Users Data</div>
@@ -22,17 +21,6 @@
            <canvas ref="pieChart" width="250" height="250"></canvas> 
           <!-- <q-skeleton type="rect" class="q-mt-md" width="250px" height="250px"  style="margin-left:100px; border-radius:50%"/> -->
         </div>
-      </div>
-    </div>
-    <div class="row justify-between">
-      <div class="col-6  q-ma-xl row justify-around q-py-lg "
-        style="width: 250px; height: 90px; border:2px solid black">
-        <div>Total Products</div>
-        <div>{{ totalProducts }}</div>
-      </div>
-      <div class="col-6 q-ma-xl row justify-around q-py-lg" style="width: 250px; height: 90px; border:2px solid black">
-        <div>Total Users</div>
-        <div>{{ totalUsers }}</div>
       </div>
     </div>
   </div>

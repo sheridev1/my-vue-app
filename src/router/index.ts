@@ -18,7 +18,8 @@ import MyLayout from '../layout/MyLayout.vue'
 import AdminLayout from '../layout/AdminLayout.vue'
 import Dashboard from '../view/DashBoard.vue'
 import AddProducts from '../view/AddProducts.vue'
-import Users from '../view/Users.vue'
+import Users from '../view/Users.vue';
+import Sales from '../view/Sales.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -59,7 +60,8 @@ const router = createRouter({
         { path: '', component: Dashboard },
         { path: 'chat', component: Admin, meta: { showFloatingButton: false } },
         { path: 'product', component: AddProducts, name: 'product' },
-        {path:'users', component:Users, name:"Users"}
+        {path:'users', component:Users, name:"Users"},
+        {path:'sales', component:Sales, name:"Sales"}
       ],
     },
   ]

@@ -35,14 +35,14 @@
     </div>
 
     <!-- Main chat area -->
-    <div class="main-container q-pa-none q-gutter-sm">
+    <div class="main-container q-pa-none q-gutter-x-md ">
       <div v-if="selectedClient" class="chat-container">
         <div class="q-px-md">
           <h6>Chat with {{ selectedClient.name }}</h6>
           <q-separator color="black" />
         </div>
 
-        <div style="height: calc(100vh - 130px); display: flex; flex-direction: column;"
+        <div style="height: calc(100vh - 170px); display: flex; flex-direction: column;"
           class="q-px-md q-py-sm q-gutter-y-xs">
           <div style="flex-grow: 1; min-height: calc(100vh - 400px); overflow-y: auto;" class="q-pa-md"
             ref="chatMessages">

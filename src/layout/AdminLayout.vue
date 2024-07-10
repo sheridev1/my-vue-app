@@ -60,6 +60,16 @@
           </q-item-section>
           <q-item-section @click="navigate('/admin/chat')">Chat</q-item-section>
         </q-item>
+
+
+        <q-item>
+          <q-item-section avatar>
+            <q-avatar>
+              <i class="fa-solid fa-shop"></i>
+            </q-avatar>
+          </q-item-section>
+          <q-item-section @click="navigate('/admin/sales')">Sales</q-item-section>
+        </q-item>
       </q-list>
     </q-drawer>
 
@@ -110,7 +120,7 @@ const signOut = () => {
 
 .main-content {
   overflow-y: auto;
-  height: 100vh;
+  height: 90vh;
   padding: 20px;
 }
 </style>

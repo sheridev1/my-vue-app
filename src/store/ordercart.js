@@ -6,6 +6,7 @@ export const getOrderStore = defineStore('ordercart', {
     ordercart: null,
     loading: false,
     error: null,
+    orders:[]
   }),
   actions: {
     async order(billingdetail) {
@@ -25,6 +26,18 @@ export const getOrderStore = defineStore('ordercart', {
         this.error = error.response?.data?.message || 'An error occurred';
       } finally {
         this.loading = false;
+      }
+    },
+    async fetchOrders() {
+      this.loading=true
+      try {
+        const response = await fetch('http://localhost:5000/api/order/getOrders');
+        const data = await response.json();
+        this.orders = data;
+        this.loading=false;
+      } catch (error) {
+        console.error('Error fetching orders:', error);
+        this.loading=true;
       }
     }
   },

@@ -51,9 +51,9 @@ export const getCartStore = defineStore("cart", {
         localStorage.setItem("cart", JSON.stringify(cart));
       } else {
         cart = JSON.parse(cart);
-        if (!cart.item) {
-          cart.item = [];
-        }
+        // if (!cart.item) {
+        //   cart.item = [];
+        // }
         const existingItem = cart.item?.find((i) => i.product === param);
         if (existingItem) {
           existingItem.quantity += this.count;
