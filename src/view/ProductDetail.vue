@@ -10,6 +10,7 @@ import ReviewSection from '../components/ReviewSection.vue';
 import { useProductsStore } from '../store/products';
 import { Swiper, SwiperSlide } from 'swiper/vue';
 import { getCartStore } from '../store/addtocart';
+import { storeToRefs } from 'pinia';
 
 
 const route = useRoute();
@@ -29,6 +30,7 @@ const error = computed(() => productStore.error);
 
 //cart store
 const cartStore = getCartStore();
+const {localcart}=storeToRefs(cartStore)
 const count = computed(() => cartStore.count);
 const id = computed(() => route.params.id)
 const noofitem=computed(()=> cartStore.cartLength)
@@ -62,10 +64,6 @@ onMounted(() => {
     window.scrollTo(0, 0);
     loadProduct();
     loadReviews();
-    
-    
-
-
 });
 
 watch(() => route.params.id, () => {
@@ -85,8 +83,6 @@ watch(() => route.params.id, () => {
 const loadReviews = async () => {
     await productsStore.getReviews(route.params.id);
     await productsStore.checkUserReview(data.value)
-
-
 }
 
 //Asssigning tempory user id
@@ -99,11 +95,9 @@ const generateGuestUserId = () => {
 const addtocart = (id) => {
     if (count.value >= 1) {
         let param = route.params.id;
-        let cart = localStorage.getItem('cart')
+        let cart = localStorage.getItem('cart');
         console.log("local cart ", cart)
-
-        cartStore.localcart(cart, param);
-        
+        cartStore.localcart(cart, param);  
         if (cart) {
             showNotify("Product has been added to the cart")
         }
@@ -138,7 +132,6 @@ const buynow = () => {
 <template>
     <div>
         <template v-if="product">
-
             <div class="row  q-mb-lg">
                 <div class="col-7 flex items-center justify-center">
                     <ImageGellary />

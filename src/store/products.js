@@ -11,6 +11,7 @@ export const useProductsStore = defineStore("products", {
         limitedProducts: [],
         limitedCategory: [],
         searchedProduct: [],
+        featuredProducts: [],
         reviews: [],
         visible: false,
         errorMessages: "",
@@ -20,8 +21,8 @@ export const useProductsStore = defineStore("products", {
         hasMoreProducts: true,
         userHasReviewed: true,
         categories: [],
-        companies: []
-
+        companies: [],
+        total: 0,
     }),
     actions: {
         async addProduct(product) {
@@ -29,53 +30,76 @@ export const useProductsStore = defineStore("products", {
             this.errorMessages = "";
             this.success = null;
             try {
-                const response = await axios.post('http://localhost:5000/api/products/add', product, {
-                    headers: {
-                        'Content-Type': 'application/json'
+                const response = await axios.post(
+                    "http://localhost:5000/api/products/add",
+                    product,
+                    {
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
                     }
-                });
-                this.success = 'Product added successfully';
+                );
+                this.success = "Product added successfully";
             } catch (error) {
-                this.errorMessages = 'Failed to add product';
+                this.errorMessages = "Failed to add product";
             } finally {
                 this.visible = false;
             }
-
         },
         async fetchCategories() {
             this.visible = true;
             this.errorMessages = "";
             try {
-                const response = await axios.get('http://localhost:5000/api/products/metadata');
+                const response = await axios.get(
+                    "http://localhost:5000/api/products/metadata"
+                );
                 this.categories = response.data.categories;
                 this.companies = response.data.companies;
             } catch (error) {
-                console.error('Error fetching categories:', error);
-                this.errorMessages = 'Failed to fetch categories';
+                console.error("Error fetching categories:", error);
+                this.errorMessages = "Failed to fetch categories";
             }
         },
         async deleteProduct(productId) {
+            const role = JSON.parse(localStorage.getItem("user")).role;
             try {
-                const response = await axios.delete(`http://localhost:5000/api/products/${productId}`);
+                const response = await axios.delete(
+                    `http://localhost:5000/api/products/${productId}`,
+                    {
+                        headers: {
+                            "Content-Type": "application/json",
+                            Role: role,
+                        },
+                    }
+                );
                 const deletedProduct = response.data.product;
-                this.success = 'Product deleted successfully';
-              } catch (error) {
-                console.error('Error deleting product:', error);
-                throw new Error('Failed to delete product. Please try again later.');
-              }
-
+                this.success = "Product deleted successfully";
+            } catch (error) {
+                console.error("Error deleting product:", error);
+                throw new Error("Failed to delete product. Please try again later.");
+            }
         },
         async editProduct({ productId, updatedProduct }) {
             this.success = null;
+            const role = JSON.parse(localStorage.getItem("user")).role;
+            console.log("role", role);
             try {
-              const response = await axios.put(`http://localhost:5000/api/products/${productId}`, updatedProduct);
-              // Optionally, commit mutation to update the product in the store if needed
-              this.success = 'Product updated successfully';
+                const response = await axios.put(
+                    `http://localhost:5000/api/products/${productId}`,
+                    updatedProduct,
+                    {
+                        headers: {
+                            "Content-Type": "application/json",
+                            Role: role,
+                        },
+                    }
+                );
+                this.success = "Product updated successfully";
             } catch (error) {
-              console.error('Error editing product:', error);
-              throw error; // Handle or rethrow the error as needed
+                console.error("Error editing product:", error);
+                throw error; // Handle or rethrow the error as needed
             }
-          },          
+        },
         async fetchProducts() {
             this.visible = true;
             this.errorMessages = "";
@@ -96,8 +120,29 @@ export const useProductsStore = defineStore("products", {
             this.errorMessage = "";
             try {
                 const response = await axios.get("http://localhost:5000/api/products/");
-                this.filtered = response.data.myData.filter(product => product.featured == true);
+                this.filtered = response.data.myData.filter(
+                    (product) => product.featured == true
+                );
+            } catch (error) {
+                this.errorMessage =
+                    error.response?.data?.message || "Failed to load products";
+            } finally {
+                this.visible = false;
+            }
+        },
+        async featured(page) {
+            this.visible = true;
+            this.errorMessage = "";
+            try {
+                const url = `http://localhost:5000/api/products/filters/?featured=true&page=${page}&limit=3`;
+                const response = await axios.get(url);
+                this.featuredProducts = response.data.filteredData;
+                console.log("total filtred Products", response.data.filteredData);
+                // this.total=response.data.total
+                console.log("total value", response.data.total);
+                this.currentPage = page;
 
+                return response.data.total;
             } catch (error) {
                 this.errorMessage =
                     error.response?.data?.message || "Failed to load products";
@@ -110,20 +155,21 @@ export const useProductsStore = defineStore("products", {
             this.errorMessages = "";
             try {
                 const limit = 8;
-                const url = `http://localhost:5000/api/products/filters/?page=${page}&limit=8`
+                const url = `http://localhost:5000/api/products/filters/?page=${page}&limit=3`;
                 const response = await axios.get(url);
                 this.limitedProducts = response.data.filteredData;
+                //this.total=response.data.total
+                // console.log("total value",response.data.total)
                 this.currentPage = page;
                 if (this.limitedProducts.length < limit) {
                     this.hasMoreProducts = false;
                 } else {
                     this.hasMoreProducts = true;
                 }
-            }
-            catch (error) {
-                console.error('Failed to fetch products', error);
-            }
-            finally {
+                return response.data.total;
+            } catch (error) {
+                console.error("Failed to fetch products", error);
+            } finally {
                 this.visible = false;
             }
         },
@@ -132,42 +178,37 @@ export const useProductsStore = defineStore("products", {
             this.errorMessages = "";
             try {
                 const limit = 8;
-                const url = `http://localhost:5000/api/products/filters/?category=${name}&page=${page}&limit=8`
+                const url = `http://localhost:5000/api/products/filters/?category=${name}&page=${page}&limit=3`;
                 const response = await axios.get(url);
                 this.limitedCategory = response.data.filteredData;
                 this.currentPage = page;
+                this.total = response.data.total;
+                console.log("total value store", response.data.total);
                 if (this.limitedProducts.length < limit) {
                     this.hasMoreProducts = false;
                 } else {
                     this.hasMoreProducts = true;
                 }
-            }
-            catch (error) {
-                console.error('Failed to fetch products', error);
-            }
-            finally {
+                return response.data.total;
+            } catch (error) {
+                console.error("Failed to fetch products", error);
+            } finally {
                 this.visible = false;
             }
-
         },
         async searchProductsByName(name) {
             this.visible = true;
             this.errorMessages = "";
             try {
-
-                const url = `http://localhost:5000/api/products/filters/?name=${name}`
+                const url = `http://localhost:5000/api/products/filters/?name=${name}`;
                 const response = await axios.get(url);
                 this.searchedProduct = response.data.filteredData;
-                console.log("searched product", this.searchedProduct)
-
-            }
-            catch (error) {
-                console.error('Failed to fetch products', error);
-            }
-            finally {
+                console.log("searched product", this.searchedProduct);
+            } catch (error) {
+                console.error("Failed to fetch products", error);
+            } finally {
                 this.visible = false;
             }
-
         },
         async postReview(params, reviewData) {
             this.visible = true;
@@ -175,15 +216,13 @@ export const useProductsStore = defineStore("products", {
             try {
                 const url = `http://localhost:5000/api/products/${params}/review`;
                 const response = await axios.post(url, reviewData);
-                console.log("message", response.data.message)
+                console.log("message", response.data.message);
 
                 await this.getReviews(productId);
-                this.errorMessages = '';
-
+                this.errorMessages = "";
             } catch (error) {
-                console.error('An error occurred while posting the review:', error);
-            }
-            finally {
+                console.error("An error occurred while posting the review:", error);
+            } finally {
                 this.visible = false;
             }
         },
@@ -194,13 +233,11 @@ export const useProductsStore = defineStore("products", {
                 const url = `http://localhost:5000/api/products/${params}/getreview`;
                 const response = await axios.get(url);
                 this.reviews = response.data.review;
-
             } catch (error) {
                 this.errorMessages = error.response?.data?.message;
-                console.log("error", this.errorMessages)
-                console.error('An error occurred while posting the review:', error);
-            }
-            finally {
+                console.log("error", this.errorMessages);
+                console.error("An error occurred while posting the review:", error);
+            } finally {
                 this.visible = false;
             }
         },
@@ -216,15 +253,10 @@ export const useProductsStore = defineStore("products", {
                 const response = await axios.post(url, data);
                 this.userHasReviewed = response.data.hasReviewed;
             } catch (error) {
-                this.errorMessages = 'Error checking user review';
-            }
-            finally {
+                this.errorMessages = "Error checking user review";
+            } finally {
                 this.visible = false;
             }
-
-        }
-
+        },
     },
-
-
 });

@@ -53,7 +53,7 @@
                         <q-card-section>
                             
                             <div class="text-h6 q-mb-xs">{{ review.comment }}</div>
-                            <div class="text-h7">{{ review.user.username }}</div>
+                            <div class="text-h7">{{ review.user?.username }}</div>
                             <div class="text-h7 q-mb-xs">{{ formatDate(review.createdAt) }}</div>
                             <div class="row no-wrap items-center">
                                 <q-rating size="18px" v-model="review.rating" :max="5" readonly color="accent" />
@@ -114,7 +114,7 @@ const Data = ref({
     user: localStorage.getItem('id_User')
 });
 
-const onecommnet = computed(() => productStore.reviews?.find(x => x.user._id == localStorage.getItem('id_User')) ? true : false);
+const onecommnet = computed(() => productStore.reviews?.find(x => x.user?._id == localStorage.getItem('id_User')) ? true : false);
 const isLoggedIn = computed(() => localStorage.getItem('authToken') && localStorage.getItem('id_User'));
 
 const showNotify = (message) => {

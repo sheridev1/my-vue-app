@@ -33,7 +33,7 @@ const router = createRouter({
         { path: '/contact', name: 'contact', component: ContactPage, meta: { showFloatingButton: true } },
         { path: '/login', name: 'login', component: LoginPage, meta: { showFloatingButton: false } },
         { path: '/about', name: 'about', component: AboutPage, meta: { showFloatingButton: true } },
-        { path: '/allproducts/featured=:featured/category=:category?/page=:page?', name: 'allproducts', component: ProductsComp, props: true, meta: { showFloatingButton: false } },
+        { path: '/allproducts', name: 'allproducts', component: ProductsComp, props: true, meta: { showFloatingButton: false } },
         { path: '/product/:id', name: 'ProductDetail', component: ProductDetail, props: true, meta: { showFloatingButton: false } },
         { path: '/cart', name: 'cart', component: AddToCart, props: true, meta: { showFloatingButton: false } },
         { path: '/order/:id?', name: 'order', component: OrderPage, meta: { showFloatingButton: false } },
@@ -60,8 +60,19 @@ const router = createRouter({
         { path: '', component: Dashboard },
         { path: 'chat', component: Admin, meta: { showFloatingButton: false } },
         { path: 'product', component: AddProducts, name: 'product' },
-        {path:'users', component:Users, name:"Users"},
-        {path:'sales', component:Sales, name:"Sales"}
+        { path: 'users', component: Users, name: "Users" },
+        {
+          path: 'sales', component: Sales, name: "Sales",
+          beforeEnter: (to, from, next) => {
+            const userData = JSON.parse(localStorage.getItem('user'));
+            const userRole = userData ? userData.role : null;
+            if (userRole === 'admin') {
+              next(); // Allow access
+            } else {
+              next('/admin'); // Redirect if not authorized
+            }
+          }
+        }
       ],
     },
   ]

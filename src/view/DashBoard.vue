@@ -12,11 +12,10 @@
                 <div>Total Users</div>
                 <div>{{ totalUsers }}</div>
             </div>
-
             <div class="col-3 row justify-around q-py-lg"
                 style="width: 200px; height: 90px; border:2px solid black">
                 <div>Total Sales</div>
-                <div>{{ totalCost }}</div>
+                <div>$ {{ totalCost }}</div>
             </div>
             <div class="col-3  row justify-around q-py-lg"
                 style="width: 200px; height: 90px; border:2px solid black">
@@ -44,9 +43,6 @@ const orderStore = getOrderStore();
 const { fetchOrders, orders } = storeToRefs(orderStore)
 const { fetchProducts, products, visible } = storeToRefs(productStore);
 const { getAllUsers, allusers, loading } = storeToRefs(cartStore);
-
-
-
 const totalUsers = computed(() => allusers.value.length);
 const totalProducts = computed(() => products.value.length);
 

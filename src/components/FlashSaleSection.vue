@@ -51,7 +51,7 @@ onMounted(() => {
             </div>
             <div class="col  float-left">
                 <div class="q-gutter-sm float-right">
-                    <q-btn color="accent" @click="router.push({ name: 'allproducts', params: { featured: featured, page:1 } })"
+                    <q-btn color="accent" @click="router.push({ name: 'allproducts', query: { featured: featured, page:1 } })"
                         text-color="white" label="View All" class="q-my-lg" style="width:100px; " />
                 </div>
             </div>

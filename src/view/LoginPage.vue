@@ -10,8 +10,8 @@ const router = useRouter();
 const route = useRoute();
 const cartStore = getCartStore();
 const form = ref({
-    username: " ",
-    email: " ",
+    username: "",
+    email: "",
     password: ""
 })
 const visible = ref(false);
@@ -19,8 +19,8 @@ const errorMessage = ref('');
 
 const onReset = () => {
     form.value = ({
-        username: " ",
-        email: " ",
+        username: "",
+        email: "",
         password: ""
     })
 }
@@ -32,7 +32,7 @@ const onSubmit = async (e) => {
         const response = await axios.post('http://localhost:5000/api/signin', form.value);
         const token = response.data.token;
         const id_User = response.data.user._id;
-        console.log('Registration successful:', response.data.user);
+        console.log('Login successful:', response.data.user);
         if (token) {
             localStorage.setItem('user', JSON.stringify(response.data.user))
             localStorage.setItem('id_User', id_User);
@@ -41,7 +41,7 @@ const onSubmit = async (e) => {
             cartStore.setUser(response.data.user);
 
             const userRole = response.data.user.role;
-            if (userRole === 'admin') {
+            if (userRole === 'admin' || userRole==='editor') {
                 router.push('/admin');
             }
             else {

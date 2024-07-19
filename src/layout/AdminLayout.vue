@@ -12,6 +12,7 @@
             <div class="row">
               <div class="text-body1 q-mt-sm">
                 {{ user ? user.username : "" }}
+                ({{ user? user.role:"" }})
               </div>
               <div v-if="user">
                 <q-btn-dropdown color="black" flat style="width: 5px; height:5px">
@@ -62,7 +63,7 @@
         </q-item>
 
 
-        <q-item>
+        <q-item v-if="user && user.role === 'admin'">
           <q-item-section avatar>
             <q-avatar>
               <i class="fa-solid fa-shop"></i>

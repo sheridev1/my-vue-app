@@ -17,7 +17,7 @@ onMounted(() => {
 
 const show=(category)=>{
   console.log("catgory side menu", category)
-  router.push({ name: 'allproducts', params: { featured:'false', category , page:1} })
+  router.push({ name: 'allproducts', query: { featured:'false', category , page:1} })
   
 }
 const categories = [

@@ -198,6 +198,7 @@ const onAdd = async () => {
       message: `Product added successfully.`,
     });
     await productStore.fetchProducts();
+    filteredProducts
     isPopupOpen.value = false;
     onReset();
   } catch (error) {

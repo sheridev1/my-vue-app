@@ -13,7 +13,7 @@
                 Total Sales
                 {{ orders.length }}
                 <div>Total Cost
-                    {{ totalCost }}
+                    $ {{ totalCost }}
                 </div>
             </div>
         </div>
@@ -44,6 +44,7 @@
             </q-table>
         </template>
     </div>
+    
 </template>
 
 <script setup>
@@ -64,7 +65,7 @@ const columns = [
     { name: 'item', label: 'Items', field: 'item', align: 'left' },
     { name: 'address', label: 'Address', field: 'address', align: 'left' },
     { name: 'paymentMethod', label: 'Payment Method', field: 'paymentMethod', align: 'left' },
-    { name: 'finalTotal', label: 'Final Total', field: 'finalTotal', align: 'left' },
+    { name: 'finalTotal', label: '$Final Total', field: 'finalTotal', align: 'left' },
     { name: 'notes', label: 'Notes', field: 'notes', align: 'left' }
 ];
 
@@ -99,5 +100,4 @@ onMounted(() => {
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
-/* Add any custom styles here */
 </style>

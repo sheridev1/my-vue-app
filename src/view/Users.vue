@@ -40,22 +40,21 @@
         <template v-else>
             <div align="center">
                 <div class="cart row">
-                    <div class="col-1">UserName</div>
+                    <div class="col-2">UserName</div>
                     <div class="col-4">Password</div>
-                    <div class="col-3">Email</div>
+                    <div class="col-2">Email</div>
                     <div class="col-2">Role</div>
                     <div class="col-2">Action</div>
                 </div>
                 <div class="row cart q-my-md justify-center items-center" v-for="item in filteredUsers" :key="item._id">
-                    <div class="col-1">{{ item.username }}</div>
+                    <div class="col-2 ellipsis">{{ item.username }}</div>
                     <div class="col-4 ellipsis">{{ item.password }}</div>
-                    <div class="col-3">{{ item.email }}</div>
+                    <div class="col-2">{{ item.email }}</div>
                     <div class="col-2">{{ item.role }}</div>
                     <div class="col-2 content-between q-gutter-x-md">
                         <q-btn icon="edit" style="width: 10px;" color="green" @click="openPopup(item)" />
                         <q-btn icon="delete" style="width: 10px;" color="negative" :disabled="disable"
                             @click="onDelete(item._id)" />
-
                     </div>
                 </div>
             </div>
@@ -165,6 +164,7 @@ const addUser = async () => {
         console.log("Registration successful:", response.data);
         onReset();
         await cartStore.getAllUsers(); // Fetch updated list of user
+        filteredUsers //shows updated list
     } catch (error) {
         console.log("error", error);
         if (error.response.data.error || error.response?.data.message) {

@@ -5,12 +5,15 @@ import SearchInput from "../components/SearchInput.vue";
 import { getCartStore } from '../store/addtocart';
 import slide1 from '../assets/p3.png';
 import { removeItemStore } from '../store/remove';
+import { storeToRefs } from 'pinia';
 
 const route = useRoute();
 const router = useRouter();
 const cartStore = getCartStore();
 const removeStore = removeItemStore();
 
+
+const { count,lengthCart} =storeToRefs(cartStore)
 // Computed properties
 const istoken = computed(() => localStorage.getItem('authToken'));
 const opendrawer = computed(() => cartStore.isCartDrawerOpen);
@@ -72,7 +75,7 @@ const hasError = computed(() => {
 });
 
 watch(productArray, () => {
-    cartStore.lengthCart();
+    lengthCart().value;
 });
 
 onMounted(() => {

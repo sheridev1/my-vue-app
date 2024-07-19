@@ -30,7 +30,7 @@ export const getCartStore = defineStore("cart", {
           "http://localhost:5000/api/cart",
           product
         );
-        console.log(response.data);
+        // console.log(response.data);
 
         this.cart = response.data;
         this.product = JSON.parse(this.cart);
@@ -85,24 +85,26 @@ export const getCartStore = defineStore("cart", {
     },
     async cartItem() {
       this.cartLoading = true;
-      const authToken = localStorage.getItem("authToken");
-      const id_User = localStorage.getItem("id_User");
-
-      let cart = localStorage.getItem("cart");
+      const authToken = localStorage.getItem('authToken');
+      const id_User = localStorage.getItem('id_User');
+      let cart = localStorage.getItem('cart');
+      if (!cart) {
+        console.log('Cart is empty or undefined');
+        localStorage.removeItem('cart');
+        this.cartLoading = false;
+        return;
+      }
+      
       if (!authToken && !id_User) {
         if (cart) {
           cart = JSON.parse(cart);
           for (const item of cart.item) {
             const { product: productId, quantity } = item;
             try {
-              const response = await fetch(
-                `http://localhost:5000/api/product/?id=${productId}`
-              );
+              const response = await fetch(`http://localhost:5000/api/product/?id=${productId}`);
               const productData = await response.json();
 
-              const existingProductIndex = this.productArray.findIndex(
-                (product) => product.id === productId
-              );
+              const existingProductIndex = this.productArray.findIndex(product => product.id === productId);
               if (existingProductIndex !== -1) {
                 this.productArray[existingProductIndex].quantity = quantity;
               } else {
@@ -111,11 +113,11 @@ export const getCartStore = defineStore("cart", {
                   name: productData.myData.name,
                   price: productData.myData.price,
                   quantity,
-                  quantityError: "",
+                  quantityError: '',
                 });
               }
             } catch (error) {
-              console.log("Error while fetching", error);
+              console.log('Error while fetching', error);
             } finally {
               this.cartLoading = false;
             }
@@ -128,23 +130,21 @@ export const getCartStore = defineStore("cart", {
           try {
             await this.addtoCart(cart);
           } catch (error) {
-            console.log("Error while adding cart item to server");
+            console.log('Error while adding cart item to server');
           }
-
+        
           const cartData = await this.fetchCartFromAPI(id_User);
-          localStorage.setItem("cart", JSON.stringify(cartData));
+          localStorage.setItem('cart', JSON.stringify(cartData));
 
           for (const item of cart.item) {
             const { product: productId, quantity } = item;
             try {
-              const response = await fetch(
-                `http://localhost:5000/api/product/?id=${productId}`
-              );
-              const productData = await response.json();
+              const response = await  axios.get(`http://localhost:5000/api/product/?id=${productId}`)
+             // fetch(`http://localhost:5000/api/product/?id=${productId}`);
+              const productData = await response.data;
+              console.log("response",  response.data.myData)
 
-              const existingProductIndex = this.productArray.findIndex(
-                (product) => product.id === productId
-              );
+              const existingProductIndex = this.productArray.findIndex(product => product.id === productId);
               if (existingProductIndex !== -1) {
                 this.productArray[existingProductIndex].quantity = quantity;
               } else {
@@ -153,11 +153,11 @@ export const getCartStore = defineStore("cart", {
                   name: productData.myData.name,
                   price: productData.myData.price,
                   quantity,
-                  quantityError: "",
+                  quantityError: '',
                 });
               }
             } catch (error) {
-              console.log("Error while fetching", error);
+              console.log('Error while fetching', error);
             } finally {
               this.cartLoading = false;
             }
@@ -165,7 +165,6 @@ export const getCartStore = defineStore("cart", {
         }
       }
     },
-
     async fetchCartFromAPI(user) {
       try {
         const response = await axios.get(
@@ -268,11 +267,18 @@ export const getCartStore = defineStore("cart", {
 
     },
     async deleteUser(userId) {
+      const role = JSON.parse(localStorage.getItem("user")).role;
       this.errorMessages = "";
       this.success = "";
       try {
         const response = await axios.delete(
-          `http://localhost:5000/api/user/${userId}`
+          `http://localhost:5000/api/user/${userId}`,
+          {
+            headers: {
+                "Content-Type": "application/json",
+                Role: role,
+            },
+        }
         );
         const deletedProduct = response.data.product;
         this.success = "User deleted successfully";
@@ -282,11 +288,18 @@ export const getCartStore = defineStore("cart", {
       }
     },
     async editUser({ userId, updatedUser }) {
+      const role = JSON.parse(localStorage.getItem("user")).role;
       this.success = null;
       try {
         const response = await axios.put(
           `http://localhost:5000/api/user/${userId}`,
-          updatedUser
+          updatedUser,
+          {
+            headers: {
+                "Content-Type": "application/json",
+                Role: role,
+            },
+        }
         );
         this.success = "User updated successfully";
       } catch (error) {

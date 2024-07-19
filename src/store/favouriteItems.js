@@ -14,6 +14,7 @@ export const getFavProductStore = defineStore(' ', {
             try {
               const response = await axios.get(`http://localhost:5000/api/product/?id=${id}`);
               const product = response.data.myData;
+              console.log("fecth fav", product)
               this.products = [...this.products.filter(p => p._id !== id), product];
             } catch (error) {
               this.error = error.response?.data?.message || 'An error occurred';
@@ -26,6 +27,7 @@ export const getFavProductStore = defineStore(' ', {
         //     this.filtered = this.products.filter(product => product.featured);
         // },
         isProductFavorite(productId) {
+            console.log("product id", productId)
             return this.favorites.includes(productId);
         },
         toggleFavorite(productId) {

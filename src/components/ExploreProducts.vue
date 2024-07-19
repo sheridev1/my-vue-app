@@ -34,7 +34,7 @@ const router = useRouter()
 
             <div class="col  float-left">
                 <div class="q-gutter-sm  float-right">
-                    <q-btn @click="router.push({ name: 'allproducts', params: { featured: 'false', page:1 } })"
+                    <q-btn @click="router.push({ name: 'allproducts', query: { featured: 'false', page:1 } })"
                         style="background: #DB4444; color: white" label="View All" />
                 </div>
             </div>
