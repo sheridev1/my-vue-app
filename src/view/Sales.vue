@@ -31,6 +31,7 @@
             </div>
         </template>
         <template v-else>
+           
             <q-table :rows="filteredOrders" :columns="columns" row-key="_id" class="q-ma-md">
                 <template v-slot:body-cell-item="props">
                     <q-td :props="props">{{ props.row.item.map(item => item.product.name).join(', ') }}</q-td>
@@ -76,7 +77,7 @@ const totalCost=computed(()=>{
 
 const filteredOrders = computed(() => {
     return orders.value.filter(order =>
-        order.user.username.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
+        order.user?.username.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
         order.item.some(item => item.product.name.toLowerCase().includes(searchTerm.value.toLowerCase())
         || order.finalTotal.toString().includes(searchTerm.value))
     );

@@ -17,11 +17,10 @@ const route = useRoute();
 const router = useRouter();
 let rating = 5
 // let IMAGEURL = img1
-
 const istoken = computed(() => localStorage.getItem('authToken'))
 const id_User = computed(() => localStorage.getItem('id_User'))
-
 const productStore = getProductStore();
+const {cartLength}=storeToRefs(productStore);
 const productsStore = useProductsStore();
 const product = computed(() => productStore.product);
 const loading = computed(() => productStore.loading);
@@ -36,7 +35,7 @@ const id = computed(() => route.params.id)
 const noofitem=computed(()=> cartStore.cartLength)
 // const count = ref(1);
 const $q = useQuasar();
-
+ 
 const data = ref({
     product: route.params.id,
     user: localStorage.getItem('id_User')
@@ -73,9 +72,7 @@ watch(() => route.params.id, () => {
     setTimeout(() => {
         window.scrollTo(0, 0);
     }, 100)
-   
-    
-    // Scroll to the top when the route parameter changes
+     // Scroll to the top when the route parameter changes
 });
 
 
@@ -104,14 +101,13 @@ const addtocart = (id) => {
     } else {
         alert("Count is 0")
     }
-
 }
 
 
 //buy now 
 const buynow = () => {
     if (count.value >= 1) {
-        const checkout = {
+        const checkout = { 
             user: localStorage.getItem('userId'),
             item: [
                 {
@@ -128,7 +124,6 @@ const buynow = () => {
 }
 
 </script>
-
 <template>
     <div>
         <template v-if="product">
@@ -193,13 +188,9 @@ const buynow = () => {
                             </div>
                             <div class="row q-pa-sm"
                                 style="border: 1px solid black; width: 200px; border-radius:5px;  border-top-left-radius:0px; border-top-right-radius:0px;">
-
                                 <i class="fa-solid fa-rotate-left q-mt-xs"></i>
                                 <div class="q-ml-md text-bold"> Return Delivery</div>
-
                             </div>
-
-
                         </div>
                     </div>
                 </div>

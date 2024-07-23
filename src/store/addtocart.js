@@ -81,7 +81,7 @@ export const getCartStore = defineStore("cart", {
       this.count = 1;
     },
     lengthCart() {
-      this.cartLength = JSON.parse(localStorage.getItem("cart"))?.item?.length;
+      this.cartLength = JSON.parse(localStorage.getItem("cart"))?.item?.length||0;
     },
     async cartItem() {
       this.cartLoading = true;
@@ -94,7 +94,6 @@ export const getCartStore = defineStore("cart", {
         this.cartLoading = false;
         return;
       }
-      
       if (!authToken && !id_User) {
         if (cart) {
           cart = JSON.parse(cart);
@@ -103,7 +102,6 @@ export const getCartStore = defineStore("cart", {
             try {
               const response = await fetch(`http://localhost:5000/api/product/?id=${productId}`);
               const productData = await response.json();
-
               const existingProductIndex = this.productArray.findIndex(product => product.id === productId);
               if (existingProductIndex !== -1) {
                 this.productArray[existingProductIndex].quantity = quantity;

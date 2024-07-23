@@ -35,6 +35,7 @@ export const getOrderStore = defineStore('ordercart', {
         const data = await response.json();
         this.orders = data;
         this.loading=false;
+        console.log("orders", this.orders)
       } catch (error) {
         console.error('Error fetching orders:', error);
         this.loading=true;

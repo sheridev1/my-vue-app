@@ -5,6 +5,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { getProductStore } from '../store/getproducts';
 import { getCartStore } from '../store/addtocart';
 import { getOrderStore } from '../store/ordercart';
+import { storeToRefs } from 'pinia';
 const route = useRoute();
 const router = useRouter();
 let IMAGEURL = slide1;
@@ -19,6 +20,7 @@ const login = ref('false'); //when login is true then he needs to be logged
 const productArray = ref([]);
 
 const productStore = getProductStore();
+const {cartLength}=storeToRefs(productStore)
 const cartStore = getCartStore();
 const orderStore = getOrderStore();
 
@@ -215,7 +217,8 @@ const placeOrder = async () => {
         zip.value = '';
         country.value = '';
         notes.value = '';
-
+        
+        productStore.cartLength=0;
 
         setTimeout(() => {
             router.push('/')

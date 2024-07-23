@@ -49,7 +49,7 @@ const router = createRouter({
       beforeEnter: (to, from, next) => {
         const userData = JSON.parse(localStorage.getItem('user'));
         const userRole = userData ? userData.role : null;
-        console.log("User role", userRole)
+        // console.log("User role", userRole)
         if (userRole === 'admin' || userRole === 'editor') {
           next(); // Allow access
         } else {
@@ -91,8 +91,19 @@ router.beforeEach((to, from, next) => {
     cartStore.isCartDrawerOpen = false;
   }
 
-  // Continue with the navigation
-  next();
+  // Check user role for client-side access
+  const userData = JSON.parse(localStorage.getItem('user'));
+  const userRole = userData ? userData.role : null;
+
+  if (userRole === 'admin' || userRole === 'editor') {
+    if (to.path.startsWith('/admin')) {
+      next(); // Allow access to admin routes
+    } else {
+      next('/admin'); // Redirect admin and editor to admin dashboard
+    }
+  } else {
+    next(); // Allow access to client-side routes
+  }
 });
 
 export default router;
